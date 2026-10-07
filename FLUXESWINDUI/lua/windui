@@ -203,27 +203,75 @@ local function BuildTheme(name, accent, outline, toggle, slider, text, placehold
 	}
 end
 
--- ===== TEMA RUBI (antes "67") =====
-Fluxo.Themes["RUBI"] = BuildTheme("RUBI", "#C41E3A", "#E84A5F", "#C41E3A", "#E84A5F", "#F0F0F0", "#9A9A9A", "#000000", "#0A0A0A", "#E84A5F")
-Fluxo.Themes.Sovereign = BuildTheme("Sovereign", "#D4AF37", "#F0D580", "#D4AF37", "#F0D580", "#FFF8E7", "#C9B98A", "#0A0805", "#15110A", "#F0D580")
+-- ===== TEMAS =====
 
-Fluxo.ThemeOrder = {"RUBI", "Sovereign"}
+-- Tema principal (antes "67")
+Fluxo.Themes["RUBI"] = BuildTheme("RUBI", "#C41E3A", "#E84A5F", "#C41E3A", "#E84A5F", "#F0F0F0", "#9A9A9A", "#000000", "#0A0A0A", "#E84A5F")
+
+-- Dorado clásico
+Fluxo.Themes["Sovereign"] = BuildTheme("Sovereign", "#D4AF37", "#F0D580", "#D4AF37", "#F0D580", "#FFF8E7", "#C9B98A", "#0A0805", "#15110A", "#F0D580")
+
+-- ===== NUEVOS =====
+Fluxo.Themes["VENOM"]    = BuildTheme("VENOM",    "#228B22", "#32CD32", "#228B22", "#32CD32", "#E8F5E9", "#8BC34A", "#000000", "#0A0A0A", "#32CD32")
+Fluxo.Themes["CYBER"]    = BuildTheme("CYBER",    "#00D4FF", "#4ECFFF", "#00D4FF", "#4ECFFF", "#E0F7FA", "#81D4FA", "#000000", "#0A0A0A", "#4ECFFF")
+Fluxo.Themes["PURPLE"]   = BuildTheme("PURPLE",   "#9B59B6", "#DDA0DD", "#9B59B6", "#DDA0DD", "#F5F0FF", "#BCA3D3", "#000000", "#0A0A0A", "#DDA0DD")
+Fluxo.Themes["GOLD"]     = BuildTheme("GOLD",     "#FFD700", "#FFF44F", "#FFD700", "#FFF44F", "#FFF8E1", "#DAA520", "#000000", "#0A0A0A", "#FFF44F")
+Fluxo.Themes["NEON"]     = BuildTheme("NEON",     "#FF00FF", "#FF69B4", "#FF00FF", "#FF69B4", "#F0F0FF", "#BA55D3", "#000000", "#0A0A0A", "#FF69B4")
+Fluxo.Themes["OCEAN"]    = BuildTheme("OCEAN",    "#1E90FF", "#87CEEB", "#1E90FF", "#87CEEB", "#E6F3FF", "#4682B4", "#000000", "#0A0A0A", "#87CEEB")
+Fluxo.Themes["DARK"]     = BuildTheme("DARK",     "#2C2C2C", "#555555", "#2C2C2C", "#555555", "#1C1C1C", "#3A3A3A", "#FFFFFF", "#111111", "#555555")
+Fluxo.Themes["LIGHT"]    = BuildTheme("LIGHT",    "#FFFFFF", "#F0F0F0", "#FFFFFF", "#F0F0F0", "#FAFAFA", "#E0E0E0", "#000000", "#FFFFFF", "#F0F0F0")
+Fluxo.Themes["ROSE"]     = BuildTheme("ROSE",     "#E91E63", "#F48FB1", "#E91E63", "#F48FB1", "#FCE4EC", "#F06292", "#000000", "#0A0A0A", "#F48FB1")
+Fluxo.Themes["FOREST"]   = BuildTheme("FOREST",   "#228B22", "#2E8B57", "#228B22", "#2E8B57", "#F0FFF0", "#3CB371", "#000000", "#0A0A0A", "#2E8B57")
+Fluxo.Themes["BLOOD"]    = BuildTheme("BLOOD",    "#8B0000", "#A52A2A", "#8B0000", "#A52A2A", "#FFEBEE", "#CD5C5C", "#FFFFFF", "#0A0A0A", "#A52A2A")
+Fluxo.Themes["SLATE"]    = BuildTheme("SLATE",    "#2F2F2F", "#4A4A4A", "#2F2F2F", "#4A4A4A", "#F5F5F5", "#696969", "#000000", "#0A0A0A", "#4A4A4A")
+Fluxo.Themes["EMERALD"]  = BuildTheme("EMERALD",  "#50C878", "#7FFF00", "#50C878", "#7FFF00", "#F0FFF0", "#32CD32", "#000000", "#0A0A0A", "#7FFF00")
+Fluxo.Themes["CORAL"]    = BuildTheme("CORAL",    "#FF7F50", "#FF6347", "#FF7F50", "#FF6347", "#FFF0F0", "#FA8072", "#000000", "#0A0A0A", "#FF6347")
+Fluxo.Themes["LAVENDER"] = BuildTheme("LAVENDER", "#E6E6FA", "#DDA0DD", "#E6E6FA", "#DDA0DD", "#F8F1FF", "#BA55D3", "#000000", "#0A0A0A", "#DDA0DD")
+Fluxo.Themes["COPPER"]   = BuildTheme("COPPER",   "#B87333", "#CD853F", "#B87333", "#CD853F", "#FFF8DC", "#DAA520", "#000000", "#0A0A0A", "#CD853F")
+Fluxo.Themes["MIDNIGHT"] = BuildTheme("MIDNIGHT", "#1C1C1C", "#2F2F2F", "#1C1C1C", "#2F2F2F", "#E8E8E8", "#4A4A4A", "#FFFFFF", "#0A0A0A", "#2F2F2F")
+Fluxo.Themes["PEACH"]    = BuildTheme("PEACH",    "#FFDAB9", "#FFCBA4", "#FFDAB9", "#FFCBA4", "#FFF5EE", "#FFB6C1", "#000000", "#0A0A0A", "#FFCBA4")
+Fluxo.Themes["SAPPHIRE"] = BuildTheme("SAPPHIRE", "#0F52BA", "#4169E1", "#0F52BA", "#4169E1", "#F0F8FF", "#1E90FF", "#000000", "#0A0A0A", "#4169E1")
+Fluxo.Themes["COCOA"]    = BuildTheme("COCOA",    "#8B4513", "#A0522D", "#8B4513", "#A0522D", "#FAF0E6", "#CD853F", "#FFFFFF", "#0A0A0A", "#A0522D")
+Fluxo.Themes["LIME"]     = BuildTheme("LIME",     "#32CD32", "#ADFF2F", "#32CD32", "#ADFF2F", "#F0FFF0", "#7CFC00", "#000000", "#0A0A0A", "#ADFF2F")
+Fluxo.Themes["INDIGO"]   = BuildTheme("INDIGO",   "#4B0082", "#6A0DAD", "#4B0082", "#6A0DAD", "#F0F0FF", "#9370DB", "#000000", "#0A0A0A", "#6A0DAD")
+Fluxo.Themes["AMBER"]    = BuildTheme("AMBER",    "#FFBF00", "#FFC000", "#FFBF00", "#FFC000", "#FFF8E1", "#FFA500", "#000000", "#0A0A0A", "#FFC000")
+
+Fluxo.ThemeOrder = {
+	"RUBI", "Sovereign",
+	"VENOM", "CYBER", "PURPLE", "GOLD", "NEON", "OCEAN",
+	"DARK", "LIGHT", "ROSE", "FOREST", "BLOOD", "SLATE",
+	"EMERALD", "CORAL", "LAVENDER", "COPPER", "MIDNIGHT",
+	"PEACH", "SAPPHIRE", "COCOA", "LIME", "INDIGO", "AMBER",
+}
 
 -- ===== FONDOS DISPONIBLES =====
 Fluxo.Backgrounds = {
-	["Fondo 1"]  = "111606148623620",
-	["Fondo 2"]  = "127475690425531",
-	["Fondo 3"]  = "75102853478391",
-	["Fondo 4"]  = "70967429484455",
-	["Fondo 5"]  = "129712892318094",
-	["Fondo 6"]  = "97823921818913",
-	["Fondo 7"]  = "99224315720440",
-	["Fondo 8"]  = "135414401061463",
-	["Fondo 9"]  = "102574649815324",
-	["Fondo 10"] = "130691930643174",
-	["Fondo 11"] = "77327983749206",
+	-- ===== SZK =====
+	["SZK1"]                   = "70967429484455",
+	["SZK2"]                   = "75102853478391",
+	["SZK3"]                   = "127475690425531",
+	["SZK4"]                   = "111606148623620",
+	["SZK5"]                   = "135414401061463",
+	["SZK6"]                   = "102574649815324",
+	["SZK7"]                   = "130691930643174",
+	["SZKHUB"]                 = "129712892318094",
+	["SZK11"]                  = "77327983749206",
+	-- ===== Extras =====
+	["JAPAN FLOWERS MODES XD"] = "97823921818913",
+	["JUDAS HANDS XD"]         = "99224315720440",
+	["SILVER"]                 = "91816825862557",
+	["FLOWER"]                 = "106649541877806",
+	["MUJER ARTE"]             = "90064912954009",
+	["MOUNTAIN EVEREST"]       = "124016448435305",
+	["SERIUS CAT"]             = "100129495197691",
 }
-Fluxo.BackgroundOrder = {"Fondo 1","Fondo 2","Fondo 3","Fondo 4","Fondo 5","Fondo 6","Fondo 7","Fondo 8","Fondo 9","Fondo 10","Fondo 11"}
+
+Fluxo.BackgroundOrder = {
+	"SZK1", "SZK2", "SZK3", "SZK4", "SZK5", "SZK6", "SZK7",
+	"SZKHUB", "SZK11",
+	"JAPAN FLOWERS MODES XD", "JUDAS HANDS XD",
+	"SILVER", "FLOWER", "MUJER ARTE", "MOUNTAIN EVEREST", "SERIUS CAT",
+}
 
 -- ===== ICONOS DEL BOTÓN FLOTANTE =====
 Fluxo.OpenButtonIcons = {
@@ -467,7 +515,7 @@ function Fluxo:CreateWindow(config)
 	local title = config.Title or "SZK Wind UI"
 	local description = config.Description or "Made by SZK"
 	local iconKey = config.Logo or config.Icon
-	local size = config.Size or Vector2.new(720, 480)
+	local size = config.Size or Vector2.new(780, 480)
 	if typeof(size) == "UDim2" then size = Vector2.new(size.X.Offset, size.Y.Offset) end
 	local toggleKey = config.ToggleKey or Enum.KeyCode.RightShift
 	local showThemeSelector = config.ThemeSelector == true
@@ -558,7 +606,7 @@ function Fluxo:CreateWindow(config)
 	MainFrame.ClipsDescendants = true
 	local SizeConstraint = Instance.new("UISizeConstraint")
 	SizeConstraint.MinSize = Vector2.new(420, 300)
-	SizeConstraint.MaxSize = Vector2.new(1000, 700)
+	SizeConstraint.MaxSize = Vector2.new(1100, 700)
 	SizeConstraint.Parent = MainFrame
 	MainFrame.Visible = false
 	MainFrame.Parent = WindowGui
@@ -783,7 +831,6 @@ function Fluxo:CreateWindow(config)
 		Outline(ThemeBtn, Theme.Outline, 1, 0.4)
 	end
 
-	-- ===== Botón selector de Fondo =====
 	local BgBtn
 	if showBgSelector then
 		BgBtn = Instance.new("TextButton")
@@ -808,7 +855,6 @@ function Fluxo:CreateWindow(config)
 		Round(4, bgPrev)
 	end
 
-	-- ===== Botón selector de Icono del botón flotante =====
 	local IconBtn
 	if showIconSelector then
 		IconBtn = Instance.new("TextButton")
@@ -844,7 +890,7 @@ function Fluxo:CreateWindow(config)
 	MinBtn.Parent = Controls
 
 	local ThemePopup = Instance.new("Frame")
-	ThemePopup.Size = UDim2.fromOffset(180, 280)
+	ThemePopup.Size = UDim2.fromOffset(200, 380)
 	ThemePopup.BackgroundColor3 = Theme.ElementBackground
 	ThemePopup.BackgroundTransparency = hasBackground and 0.5 or 0.05
 	ThemePopup.Visible = false
@@ -1162,7 +1208,7 @@ function Fluxo:CreateWindow(config)
 		Track(UserInputService.InputChanged:Connect(function(input)
 			if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 				local delta = input.Position - startInput
-				local newX = math.clamp(startSize.X + delta.X, 400, 1000)
+				local newX = math.clamp(startSize.X + delta.X, 400, 1100)
 				local newY = math.clamp(startSize.Y + delta.Y, 320, 760)
 				size = Vector2.new(newX, newY)
 				MainFrame.Size = UDim2.fromOffset(size.X, size.Y)
@@ -1220,7 +1266,6 @@ function Fluxo:CreateWindow(config)
 		if HeaderScan then HeaderScan.BackgroundColor3 = T.Accent end
 		if SideScan then SideScan.BackgroundColor3 = T.Accent end
 
-		-- FloatBtn theme refresh
 		FloatBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
 		if FloatGlow then FloatGlow.Color = T.Accent end
 		if FloatStroke then FloatStroke.Color = T.Accent end
@@ -1342,9 +1387,9 @@ function Fluxo:CreateWindow(config)
 			local abs = ThemeBtn.AbsolutePosition
 			local asz = ThemeBtn.AbsoluteSize
 			local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
-			local x = math.clamp(abs.X + asz.X - 180, 6, math.max(6, viewport.X - 186))
+			local x = math.clamp(abs.X + asz.X - 200, 6, math.max(6, viewport.X - 206))
 			local belowY = abs.Y + asz.Y + 5
-			local y = belowY + 280 <= viewport.Y - 6 and belowY or math.max(6, abs.Y - 285)
+			local y = belowY + 380 <= viewport.Y - 6 and belowY or math.max(6, abs.Y - 385)
 			ThemePopup.Position = UDim2.fromOffset(x, y)
 			ThemePopup.Visible = true
 		end)
@@ -1435,6 +1480,7 @@ function Fluxo:CreateWindow(config)
 				nameLbl.TextSize = 12
 				nameLbl.TextColor3 = Theme.Text
 				nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+				nameLbl.TextTruncate = Enum.TextTruncate.AtEnd
 				nameLbl.ZIndex = 53
 				nameLbl.Parent = row
 
@@ -1589,7 +1635,7 @@ function Fluxo:CreateWindow(config)
 
 	function Window:SetSize(newSize)
 		if typeof(newSize) == "Vector2" then
-			size = Vector2.new(math.clamp(newSize.X, 400, 1000), math.clamp(newSize.Y, 320, 760))
+			size = Vector2.new(math.clamp(newSize.X, 400, 1100), math.clamp(newSize.Y, 320, 760))
 			MainFrame.Size = UDim2.fromOffset(size.X, size.Y)
 			RecalculateScale()
 		end
