@@ -1,4 +1,4 @@
-local Wolf = { Themes = {}, Windows = {}, Flags = {}, ConfigFolder = "Wolf_Configs", CurrentTheme = nil, Icons = {} }
+local Fluxo = { Themes = {}, Windows = {}, Flags = {}, ConfigFolder = "Fluxo_Configs", CurrentTheme = nil, Icons = {} }
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -8,28 +8,28 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer and LocalPlayer:GetMouse()
 
-Wolf.IconSources = {
+Fluxo.IconSources = {
 	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons1",
 	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons2",
 	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons3",
 	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons4",
 }
 
-function Wolf:LoadIcons()
-	for _, url in ipairs(Wolf.IconSources) do
+function Fluxo:LoadIcons()
+	for _, url in ipairs(Fluxo.IconSources) do
 		local ok, data = pcall(function()
 			return loadstring(game:HttpGet(url))()
 		end)
 		if ok and type(data) == "table" then
 			for name, id in pairs(data) do
-				Wolf.Icons[name] = id
+				Fluxo.Icons[name] = id
 			end
 		end
 	end
-	return Wolf.Icons
+	return Fluxo.Icons
 end
 
-Wolf:LoadIcons()
+Fluxo:LoadIcons()
 
 local function GetUrlExtension(url, allowed, fallback)
 	local clean = string.match(url, "^[^%?#]+") or url
@@ -53,7 +53,7 @@ local function NormalizeImageSource(input)
 		if writefile and isfile and getcustomasset and makefolder and isfolder then
 			local ext = GetUrlExtension(input, {"png", "jpg", "jpeg", "gif", "webp", "bmp"}, "png")
 			local safeName = string.gsub(input, "[^%w]", "_")
-			local cacheFolder = "Wolf_Cache"
+			local cacheFolder = "Fluxo_Cache"
 			local cachePath = cacheFolder .. "/" .. safeName .. "." .. ext
 			local ok = pcall(function()
 				if not isfolder(cacheFolder) then makefolder(cacheFolder) end
@@ -82,8 +82,8 @@ local function ResolveIcon(key)
 		if string.match(key, "^https?://") then
 			return NormalizeImageSource(key), true
 		end
-		if Wolf.Icons[key] then
-			return NormalizeImageSource(Wolf.Icons[key]), true
+		if Fluxo.Icons[key] then
+			return NormalizeImageSource(Fluxo.Icons[key]), true
 		end
 		return key, false
 	end
@@ -159,7 +159,7 @@ local function Img(parent, source, size, color, transparency, z)
 	image.ImageTransparency = transparency or 0
 	image.ZIndex = z or 8
 	image.Parent = parent
-	if isCustom then image:SetAttribute("WolfCustomIcon", true) end
+	if isCustom then image:SetAttribute("FluxoCustomIcon", true) end
 	return image
 end
 
@@ -177,7 +177,7 @@ local function OpenLink(url)
 end
 
 local function TintIfAllowed(img, color)
-	if img and not img:GetAttribute("WolfCustomIcon") then
+	if img and not img:GetAttribute("FluxoCustomIcon") then
 		img.ImageColor3 = color
 	end
 end
@@ -202,13 +202,13 @@ local function BuildTheme(name, accent, outline, toggle, slider, text, placehold
 	}
 end
 
-Wolf.Themes["67"] = BuildTheme("67", "#FF1A1A", "#FF2A2A", "#FF1A1A", "#FF1A1A", "#F0F0F0", "#9A9A9A", "#000000", "#0A0A0A", "#FF1A1A")
-Wolf.Themes.Sovereign = BuildTheme("Sovereign", "#D4AF37", "#F0D580", "#D4AF37", "#F0D580", "#FFF8E7", "#C9B98A", "#0A0805", "#15110A", "#F0D580")
+Fluxo.Themes["67"] = BuildTheme("67", "#FF1A1A", "#FF2A2A", "#FF1A1A", "#FF1A1A", "#F0F0F0", "#9A9A9A", "#000000", "#0A0A0A", "#FF1A1A")
+Fluxo.Themes.Sovereign = BuildTheme("Sovereign", "#D4AF37", "#F0D580", "#D4AF37", "#F0D580", "#FFF8E7", "#C9B98A", "#0A0805", "#15110A", "#F0D580")
 
-Wolf.ThemeOrder = {"67", "Sovereign"}
+Fluxo.ThemeOrder = {"67", "Sovereign"}
 
 local MainGui = Instance.new("ScreenGui")
-MainGui.Name = "WolfLibrary"
+MainGui.Name = "FluxoWindUI"
 MainGui.ResetOnSpawn = false
 MainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 MainGui.Parent = (gethui and gethui()) or CoreGui
@@ -227,36 +227,36 @@ NotifList.Parent = NotificationHolder
 
 local ActiveNotifications = {}
 
-function Wolf:GetThemes()
-	return Wolf.Themes
+function Fluxo:GetThemes()
+	return Fluxo.Themes
 end
 
-function Wolf:SetTheme(name)
-	for _, window in ipairs(Wolf.Windows) do
+function Fluxo:SetTheme(name)
+	for _, window in ipairs(Fluxo.Windows) do
 		if window and window.SetTheme then
 			window:SetTheme(name)
 		end
 	end
 end
 
-function Wolf:GetFlag(name)
-	return Wolf.Flags[name]
+function Fluxo:GetFlag(name)
+	return Fluxo.Flags[name]
 end
 
-function Wolf:SetFlag(name, value)
-	Wolf.Flags[name] = value
+function Fluxo:SetFlag(name, value)
+	Fluxo.Flags[name] = value
 end
 
-function Wolf:SaveConfig(name)
+function Fluxo:SaveConfig(name)
 	name = tostring(name or "default")
 	if not (writefile and HttpService) then return false end
 	pcall(function()
-		if makefolder and isfolder and not isfolder(Wolf.ConfigFolder) then
-			makefolder(Wolf.ConfigFolder)
+		if makefolder and isfolder and not isfolder(Fluxo.ConfigFolder) then
+			makefolder(Fluxo.ConfigFolder)
 		end
 	end)
 	local payload = {}
-	for k, v in pairs(Wolf.Flags) do
+	for k, v in pairs(Fluxo.Flags) do
 		if typeof(v) == "Color3" then
 			payload[k] = { __color = true, R = v.R, G = v.G, B = v.B }
 		elseif typeof(v) == "EnumItem" then
@@ -267,15 +267,15 @@ function Wolf:SaveConfig(name)
 	end
 	local ok, encoded = pcall(function() return HttpService:JSONEncode(payload) end)
 	if not ok then return false end
-	local path = Wolf.ConfigFolder .. "/" .. name .. ".json"
+	local path = Fluxo.ConfigFolder .. "/" .. name .. ".json"
 	local wOk = pcall(function() writefile(path, encoded) end)
 	return wOk == true
 end
 
-function Wolf:LoadConfig(name)
+function Fluxo:LoadConfig(name)
 	name = tostring(name or "default")
 	if not (readfile and isfile and HttpService) then return false end
-	local path = Wolf.ConfigFolder .. "/" .. name .. ".json"
+	local path = Fluxo.ConfigFolder .. "/" .. name .. ".json"
 	if not isfile(path) then return false end
 	local ok, raw = pcall(function() return readfile(path) end)
 	if not ok or not raw then return false end
@@ -283,18 +283,18 @@ function Wolf:LoadConfig(name)
 	if not dOk or type(data) ~= "table" then return false end
 	for k, v in pairs(data) do
 		if type(v) == "table" and v.__color then
-			Wolf.Flags[k] = Color3.new(v.R, v.G, v.B)
+			Fluxo.Flags[k] = Color3.new(v.R, v.G, v.B)
 		elseif type(v) == "table" and v.__enum then
 			local root = Enum[v.EnumType]
-			Wolf.Flags[k] = (root and root[v.Name]) or v
+			Fluxo.Flags[k] = (root and root[v.Name]) or v
 		else
-			Wolf.Flags[k] = v
+			Fluxo.Flags[k] = v
 		end
 	end
 	return true
 end
 
-function Wolf:Notify(config)
+function Fluxo:Notify(config)
 	config = config or {}
 	local title = config.Title or "Notification"
 	local content = config.Content or config.Text or ""
@@ -310,7 +310,7 @@ function Wolf:Notify(config)
 		Info = Color3.fromRGB(80, 140, 255),
 	}
 	local accent = colors[ntype] or colors.Info
-	local T = Wolf.CurrentTheme or Wolf.Themes["67"]
+	local T = Fluxo.CurrentTheme or Fluxo.Themes["67"]
 
 	local slot = Instance.new("Frame")
 	slot.Size = UDim2.new(1, 0, 0, 0)
@@ -431,11 +431,11 @@ function Wolf:Notify(config)
 	end
 end
 
-function Wolf:CreateWindow(config)
+function Fluxo:CreateWindow(config)
 	config = config or {}
 	local themeName = config.Theme or "67"
-	local title = config.Title or "67"
-	local description = config.Description or ""
+	local title = config.Title or "Fluxo Wind UI"
+	local description = config.Description or "Made by Flux"
 	local iconKey = config.Logo or config.Icon
 	local size = config.Size or Vector2.new(720, 480)
 	if typeof(size) == "UDim2" then size = Vector2.new(size.X.Offset, size.Y.Offset) end
@@ -446,10 +446,11 @@ function Wolf:CreateWindow(config)
 	local panelTransparency = math.clamp(config.Transparency or 0.08, 0.02, 0.6)
 	local openButtonIcon = config.OpenButtonIcon or "https://cdn.discordapp.com/attachments/1521705447781044287/1550262143704760473/1789680518902-removebg-preview_1.png?ex=6aadb1a1&is=6aac6021&hm=3c16d7c7d6bb64238c13cc5ff71324c7142f68e224447cf4b2173be6d8caee69&"
 	local openButtonText = config.OpenButtonText or ""
-	local openButtonSize = tonumber(config.OpenButtonSize) or 54
+	local openButtonSize = tonumber(config.OpenButtonSize) or 48
+	local openButtonRadius = tonumber(config.OpenButtonRadius) or 12
 
-	local Theme = Wolf.Themes[themeName] or Wolf.Themes["67"]
-	Wolf.CurrentTheme = Theme
+	local Theme = Fluxo.Themes[themeName] or Fluxo.Themes["67"]
+	Fluxo.CurrentTheme = Theme
 	local Registered = {}
 	local DependentRows = {}
 
@@ -510,7 +511,7 @@ function Wolf:CreateWindow(config)
 	end
 
 	local WindowGui = Instance.new("ScreenGui")
-	WindowGui.Name = "WolfWindow"
+	WindowGui.Name = "FluxoWindow"
 	WindowGui.ResetOnSpawn = false
 	WindowGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	WindowGui.DisplayOrder = MainGui.DisplayOrder
@@ -818,7 +819,7 @@ function Wolf:CreateWindow(config)
 	PageHost.Parent = MainFrame
 
 	-- ============================================================
-	-- FLOATING OPEN BUTTON (small circular icon, redesigned)
+	-- FLOATING OPEN BUTTON (square rounded, no pulse, position persistent)
 	-- ============================================================
 	local resolvedOpenIcon, resolvedOpenIconIsCustom = ResolveIcon(openButtonIcon)
 	local hasOpenIcon = resolvedOpenIcon ~= ""
@@ -827,10 +828,9 @@ function Wolf:CreateWindow(config)
 	local FLOAT_MARGIN = 22
 	local FLOAT_X = FLOAT_MARGIN
 	local FLOAT_Y = -math.floor(FLOAT_SIZE / 2)
-	local FLOAT_OFFSCREEN_X = -FLOAT_SIZE - 40
 
 	local FloatBtn = Instance.new("TextButton")
-	FloatBtn.Name = "WolfFloatBtn"
+	FloatBtn.Name = "FluxoFloatBtn"
 	FloatBtn.Size = UDim2.fromOffset(FLOAT_SIZE, FLOAT_SIZE)
 	FloatBtn.Position = UDim2.new(0, FLOAT_X, 0.5, FLOAT_Y)
 	FloatBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
@@ -841,7 +841,7 @@ function Wolf:CreateWindow(config)
 	FloatBtn.AutoButtonColor = false
 	FloatBtn.ZIndex = 10
 	FloatBtn.Parent = WindowGui
-	Round(math.floor(FLOAT_SIZE / 2), FloatBtn)
+	Round(openButtonRadius, FloatBtn)
 
 	local FloatScale = Instance.new("UIScale")
 	FloatScale.Scale = 1
@@ -849,42 +849,24 @@ function Wolf:CreateWindow(config)
 
 	local FloatGlow = Instance.new("UIStroke")
 	FloatGlow.Color = Theme.Accent
-	FloatGlow.Thickness = 8
-	FloatGlow.Transparency = 0.92
+	FloatGlow.Thickness = 6
+	FloatGlow.Transparency = 0.9
 	FloatGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	FloatGlow.Parent = FloatBtn
 
 	local FloatStroke = Instance.new("UIStroke")
 	FloatStroke.Color = Theme.Accent
-	FloatStroke.Thickness = 1.4
+	FloatStroke.Thickness = 1.6
 	FloatStroke.Transparency = 0.15
 	FloatStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	FloatStroke.Parent = FloatBtn
 
-	local FloatPulse = Instance.new("Frame")
-	FloatPulse.Name = "WolfFloatPulse"
-	FloatPulse.AnchorPoint = Vector2.new(0.5, 0.5)
-	FloatPulse.Position = UDim2.fromScale(0.5, 0.5)
-	FloatPulse.Size = UDim2.fromScale(1, 1)
-	FloatPulse.BackgroundTransparency = 1
-	FloatPulse.BorderSizePixel = 0
-	FloatPulse.ZIndex = 9
-	FloatPulse.Parent = FloatBtn
-	local FloatPulseCorner = Instance.new("UICorner")
-	FloatPulseCorner.CornerRadius = UDim.new(1, 0)
-	FloatPulseCorner.Parent = FloatPulse
-	local FloatPulseStroke = Instance.new("UIStroke")
-	FloatPulseStroke.Color = Theme.Accent
-	FloatPulseStroke.Thickness = 1.5
-	FloatPulseStroke.Transparency = 0.35
-	FloatPulseStroke.Parent = FloatPulse
-
 	if hasOpenIcon then
 		local iconImg = Instance.new("ImageLabel")
-		iconImg.Name = "WolfFloatIcon"
+		iconImg.Name = "FluxoFloatIcon"
 		iconImg.AnchorPoint = Vector2.new(0.5, 0.5)
 		iconImg.Position = UDim2.fromScale(0.5, 0.5)
-		iconImg.Size = UDim2.fromOffset(FLOAT_SIZE - 12, FLOAT_SIZE - 12)
+		iconImg.Size = UDim2.fromOffset(FLOAT_SIZE - 14, FLOAT_SIZE - 14)
 		iconImg.BackgroundTransparency = 1
 		iconImg.Image = resolvedOpenIcon
 		iconImg.ScaleType = Enum.ScaleType.Fit
@@ -895,10 +877,10 @@ function Wolf:CreateWindow(config)
 		end
 	else
 		local symbol = Instance.new("TextLabel")
-		symbol.Name = "WolfFloatIcon"
+		symbol.Name = "FluxoFloatIcon"
 		symbol.Size = UDim2.fromScale(1, 1)
 		symbol.BackgroundTransparency = 1
-		symbol.Text = "W"
+		symbol.Text = "F"
 		symbol.Font = Enum.Font.GothamBlack
 		symbol.TextSize = math.floor(FLOAT_SIZE * 0.5)
 		symbol.TextColor3 = Theme.Accent
@@ -906,26 +888,10 @@ function Wolf:CreateWindow(config)
 		symbol.Parent = FloatBtn
 	end
 
-	local FloatDot = Instance.new("Frame")
-	FloatDot.Name = "WolfFloatDot"
-	FloatDot.AnchorPoint = Vector2.new(1, 0)
-	FloatDot.Position = UDim2.new(1, 2, 0, 2)
-	FloatDot.Size = UDim2.fromOffset(9, 9)
-	FloatDot.BackgroundColor3 = Theme.Accent
-	FloatDot.BorderSizePixel = 0
-	FloatDot.ZIndex = 13
-	FloatDot.Parent = FloatBtn
-	Round(5, FloatDot)
-	local FloatDotStroke = Instance.new("UIStroke")
-	FloatDotStroke.Color = Color3.fromRGB(8, 8, 12)
-	FloatDotStroke.Thickness = 2
-	FloatDotStroke.Parent = FloatDot
-
 	local FloatTip = Instance.new("TextLabel")
-	FloatTip.Name = "WolfFloatTip"
+	FloatTip.Name = "FluxoFloatTip"
 	FloatTip.AnchorPoint = Vector2.new(0, 0.5)
-	FloatTip.Position = UDim2.new(0, FLOAT_MARGIN + FLOAT_SIZE + 12, 0.5, FLOAT_Y + FLOAT_SIZE / 2)
-	FloatTip.Size = UDim2.fromOffset(0, 26)
+	FloatTip.Size = UDim2.fromOffset(0, 24)
 	FloatTip.AutomaticSize = Enum.AutomaticSize.X
 	FloatTip.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
 	FloatTip.BackgroundTransparency = 0.05
@@ -938,9 +904,6 @@ function Wolf:CreateWindow(config)
 	FloatTip.Parent = WindowGui
 	Round(6, FloatTip)
 	local FloatTipStroke = Outline(FloatTip, Theme.Accent, 1, 0.35)
-	local FloatTipScale = Instance.new("UIScale")
-	FloatTipScale.Scale = 0.6
-	FloatTipScale.Parent = FloatTip
 
 	local FloatHit = Instance.new("TextButton")
 	FloatHit.Size = UDim2.fromScale(1, 1)
@@ -950,53 +913,29 @@ function Wolf:CreateWindow(config)
 	FloatHit.ZIndex = 20
 	FloatHit.Parent = FloatBtn
 
-	-- Pulse animation
-	task.spawn(function()
-		while FloatPulse and FloatPulse.Parent do
-			FloatPulse.Size = UDim2.fromScale(1, 1)
-			FloatPulseStroke.Transparency = 0.35
-			local t1 = TweenService:Create(FloatPulse, TweenInfo.new(1.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromScale(1.9, 1.9) })
-			local t2 = TweenService:Create(FloatPulseStroke, TweenInfo.new(1.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Transparency = 1 })
-			t1:Play()
-			t2:Play()
-			t1.Completed:Wait()
-			task.wait(0.35)
-		end
-	end)
+	local function updateTipPosition()
+		FloatTip.Position = UDim2.new(0, FloatBtn.AbsolutePosition.X + FloatBtn.AbsoluteSize.X + 12, 0, FloatBtn.AbsolutePosition.Y + FloatBtn.AbsoluteSize.Y / 2 - 12)
+	end
 
 	local floatHovering = false
 
 	FloatHit.MouseEnter:Connect(function()
 		floatHovering = true
-		Tween(FloatScale, 0.22, { Scale = 1.14 })
-		Tween(FloatStroke, 0.22, { Transparency = 0, Thickness = 2 })
-		Tween(FloatGlow, 0.25, { Transparency = 0.4, Thickness = 11 })
-		Tween(FloatDot, 0.2, { Size = UDim2.fromOffset(12, 12) })
+		Tween(FloatStroke, 0.18, { Transparency = 0, Thickness = 2 })
+		Tween(FloatGlow, 0.2, { Transparency = 0.45, Thickness = 9 })
+		Tween(FloatBtn, 0.15, { BackgroundTransparency = 0 })
 		if openButtonText and openButtonText ~= "" then
-			FloatTip.Position = UDim2.new(0, FloatBtn.AbsolutePosition.X + FloatBtn.AbsoluteSize.X + 12, 0, FloatBtn.AbsolutePosition.Y + FloatBtn.AbsoluteSize.Y / 2 - 13)
+			updateTipPosition()
 			FloatTip.Visible = true
-			FloatTipScale.Scale = 0.6
-			Tween(FloatTipScale, 0.28, { Scale = 1 })
 		end
 	end)
 
 	FloatHit.MouseLeave:Connect(function()
 		floatHovering = false
-		Tween(FloatScale, 0.25, { Scale = 1 })
-		Tween(FloatStroke, 0.25, { Transparency = 0.15, Thickness = 1.4 })
-		Tween(FloatGlow, 0.3, { Transparency = 0.92, Thickness = 8 })
-		Tween(FloatDot, 0.2, { Size = UDim2.fromOffset(9, 9) })
-		local t = Tween(FloatTipScale, 0.18, { Scale = 0.6 })
-		t.Completed:Connect(function()
-			if not floatHovering then FloatTip.Visible = false end
-		end)
-	end)
-
-	FloatHit.MouseButton1Down:Connect(function()
-		Tween(FloatScale, 0.08, { Scale = 0.92 })
-	end)
-	FloatHit.MouseButton1Up:Connect(function()
-		Tween(FloatScale, 0.18, { Scale = floatHovering and 1.14 or 1 })
+		Tween(FloatStroke, 0.2, { Transparency = 0.15, Thickness = 1.6 })
+		Tween(FloatGlow, 0.25, { Transparency = 0.9, Thickness = 6 })
+		Tween(FloatBtn, 0.18, { BackgroundTransparency = 0.08 })
+		FloatTip.Visible = false
 	end)
 	-- ============================================================
 
@@ -1008,10 +947,10 @@ function Wolf:CreateWindow(config)
 		isAnimating = true
 		if FloatBtn.Visible then
 			FloatTip.Visible = false
-			Tween(FloatBtn, 0.22, { Position = UDim2.new(0, FLOAT_OFFSCREEN_X, 0.5, FLOAT_Y) })
-			Tween(FloatScale, 0.22, { Scale = 0.6 })
-			task.delay(0.22, function()
+			local t = Tween(FloatScale, 0.18, { Scale = 0.3 })
+			t.Completed:Connect(function()
 				FloatBtn.Visible = false
+				FloatScale.Scale = 1
 			end)
 		end
 		MainFrame.Visible = true
@@ -1030,11 +969,9 @@ function Wolf:CreateWindow(config)
 		t.Completed:Connect(function()
 			MainFrame.Visible = false
 			FloatBtn.Visible = true
-			FloatBtn.Position = UDim2.new(0, FLOAT_OFFSCREEN_X, 0.5, FLOAT_Y)
-			FloatScale.Scale = 0.6
-			local ti = TweenInfo.new(0.55, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-			TweenService:Create(FloatBtn, ti, { Position = UDim2.new(0, FLOAT_X, 0.5, FLOAT_Y) }):Play()
-			Tween(FloatScale, 0.55, { Scale = 1 })
+			FloatScale.Scale = 0.3
+			local ti = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+			TweenService:Create(FloatScale, ti, { Scale = 1 }):Play()
 			isAnimating = false
 		end)
 		winOpen = false
@@ -1086,9 +1023,13 @@ function Wolf:CreateWindow(config)
 			end
 		end))
 		Track(UserInputService.InputChanged:Connect(function(input)
-			if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			if not dragging then return end
+			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 				local delta = input.Position - startInput
 				target.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+				if target == FloatBtn and FloatTip.Visible then
+					updateTipPosition()
+				end
 			end
 		end))
 		Track(UserInputService.InputEnded:Connect(function(input)
@@ -1156,8 +1097,8 @@ function Wolf:CreateWindow(config)
 	EnableResize(ResizeGrip)
 
 	local function UpdateTheme(name, animate)
-		local T = Wolf.Themes[name] or Wolf.Themes["67"]
-		Wolf.CurrentTheme = T
+		local T = Fluxo.Themes[name] or Fluxo.Themes["67"]
+		Fluxo.CurrentTheme = T
 		Theme = T
 
 		MainFrame.BackgroundColor3 = T.Background
@@ -1185,14 +1126,12 @@ function Wolf:CreateWindow(config)
 		FloatBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
 		if FloatGlow then FloatGlow.Color = T.Accent end
 		if FloatStroke then FloatStroke.Color = T.Accent end
-		if FloatPulseStroke then FloatPulseStroke.Color = T.Accent end
-		if FloatDot then FloatDot.BackgroundColor3 = T.Accent end
 		if FloatTip then FloatTip.TextColor3 = T.Text end
 		if FloatTipStroke then FloatTipStroke.Color = T.Accent end
-		local floatIcon = FloatBtn:FindFirstChild("WolfFloatIcon")
+		local floatIcon = FloatBtn:FindFirstChild("FluxoFloatIcon")
 		if floatIcon then
 			if floatIcon:IsA("ImageLabel") then
-				if not floatIcon:GetAttribute("WolfCustomIcon") then
+				if not floatIcon:GetAttribute("FluxoCustomIcon") then
 					floatIcon.ImageColor3 = T.Accent
 				end
 			elseif floatIcon:IsA("TextLabel") then
@@ -1269,17 +1208,17 @@ function Wolf:CreateWindow(config)
 	end
 
 	if showThemeSelector then
-		for _, tName in ipairs(Wolf.ThemeOrder) do
-			if Wolf.Themes[tName] then
+		for _, tName in ipairs(Fluxo.ThemeOrder) do
+			if Fluxo.Themes[tName] then
 				local btn = Instance.new("TextButton")
 				btn.Size = UDim2.new(1, -8, 0, 30)
-				btn.BackgroundColor3 = Wolf.Themes[tName].Accent
+				btn.BackgroundColor3 = Fluxo.Themes[tName].Accent
 				btn.BackgroundTransparency = 0.78
 				btn.AutoButtonColor = false
 				btn.Text = tName
 				btn.Font = Enum.Font.GothamMedium
 				btn.TextSize = 12
-				btn.TextColor3 = Wolf.Themes[tName].Text
+				btn.TextColor3 = Fluxo.Themes[tName].Text
 				btn.TextXAlignment = Enum.TextXAlignment.Left
 				btn.ZIndex = 52
 				btn.Parent = ThemeScroll
@@ -1353,8 +1292,8 @@ function Wolf:CreateWindow(config)
 		for _, c in ipairs(self.Connections) do
 			pcall(function() c:Disconnect() end)
 		end
-		for i, w in ipairs(Wolf.Windows) do
-			if w == self then table.remove(Wolf.Windows, i) break end
+		for i, w in ipairs(Fluxo.Windows) do
+			if w == self then table.remove(Fluxo.Windows, i) break end
 		end
 		WindowGui:Destroy()
 	end
@@ -1692,7 +1631,7 @@ function Wolf:CreateWindow(config)
 				local default = c.Default or c.Value or false
 				local callback = c.Callback or function() end
 				local flag = c.Flag
-				if flag and Wolf.Flags[flag] ~= nil then default = Wolf.Flags[flag] end
+				if flag and Fluxo.Flags[flag] ~= nil then default = Fluxo.Flags[flag] end
 
 				local rowH = (desc ~= "" and 78 or 46)
 				local row, stroke, accentBar = RegisterRow(rowH)
@@ -1751,7 +1690,7 @@ function Wolf:CreateWindow(config)
 				Round(knobSize, knob)
 
 				local state = default
-				if flag then Wolf.Flags[flag] = state end
+				if flag then Fluxo.Flags[flag] = state end
 
 				local function refresh(animate)
 					local knobPos = state and UDim2.new(1, -(inset + knobSize), 0.5, 0) or UDim2.new(0, inset, 0.5, 0)
@@ -1768,7 +1707,7 @@ function Wolf:CreateWindow(config)
 
 				track.MouseButton1Click:Connect(function()
 					state = not state
-					if flag then Wolf.Flags[flag] = state end
+					if flag then Fluxo.Flags[flag] = state end
 					refresh(true)
 					callback(state)
 					CheckDependents()
@@ -1779,7 +1718,7 @@ function Wolf:CreateWindow(config)
 				local obj = {}
 				function obj:Set(v)
 					state = v
-					if flag then Wolf.Flags[flag] = state end
+					if flag then Fluxo.Flags[flag] = state end
 					refresh(true)
 					callback(state)
 					CheckDependents()
@@ -2145,7 +2084,7 @@ function Wolf:CreateWindow(config)
 					titleIcon.ImageColor3 = titleIconIsCustom and Color3.new(1, 1, 1) or Theme.Accent
 					titleIcon.ZIndex = 8
 					titleIcon.Parent = textHolder
-					if titleIconIsCustom then titleIcon:SetAttribute("WolfCustomIcon", true) end
+					if titleIconIsCustom then titleIcon:SetAttribute("FluxoCustomIcon", true) end
 				end
 
 				local contentLbl = Instance.new("TextLabel")
@@ -2484,7 +2423,7 @@ function Wolf:CreateWindow(config)
 				end
 
 				local function setFlag()
-					if flag then Wolf.Flags[flag] = multi and getMultiArray() or selected end
+					if flag then Fluxo.Flags[flag] = multi and getMultiArray() or selected end
 				end
 
 				local function build()
@@ -3117,25 +3056,25 @@ function Wolf:CreateWindow(config)
 	UpdateTheme(themeName, false)
 	OpenWindow()
 
-	table.insert(Wolf.Windows, Window)
+	table.insert(Fluxo.Windows, Window)
 	return Window
 end
 
-Wolf.New = Wolf.CreateWindow
-Wolf.Window = Wolf.CreateWindow
+Fluxo.New = Fluxo.CreateWindow
+Fluxo.Window = Fluxo.CreateWindow
 
-function Wolf:Toggle(name) 
-	local f = Wolf.Flags[name]
-	if f ~= nil then Wolf.Flags[name] = not f end
-	return Wolf.Flags[name]
+function Fluxo:Toggle(name) 
+	local f = Fluxo.Flags[name]
+	if f ~= nil then Fluxo.Flags[name] = not f end
+	return Fluxo.Flags[name]
 end
 
-function Wolf:Get(name) return Wolf.Flags[name] end
-function Wolf:Set(name, val) Wolf.Flags[name] = val end
+function Fluxo:Get(name) return Fluxo.Flags[name] end
+function Fluxo:Set(name, val) Fluxo.Flags[name] = val end
 
-function Wolf:Success(title, content, dur) return Wolf:Notify({Title = title or "Success", Content = content or "", Type = "Success", Duration = dur or 3}) end
-function Wolf:Error(title, content, dur) return Wolf:Notify({Title = title or "Error", Content = content or "", Type = "Error", Duration = dur or 3.5}) end
-function Wolf:Warn(title, content, dur) return Wolf:Notify({Title = title or "Warning", Content = content or "", Type = "Warning", Duration = dur or 3}) end
-function Wolf:Info(title, content, dur) return Wolf:Notify({Title = title or "Info", Content = content or "", Type = "Info", Duration = dur or 3}) end
+function Fluxo:Success(title, content, dur) return Fluxo:Notify({Title = title or "Success", Content = content or "", Type = "Success", Duration = dur or 3}) end
+function Fluxo:Error(title, content, dur) return Fluxo:Notify({Title = title or "Error", Content = content or "", Type = "Error", Duration = dur or 3.5}) end
+function Fluxo:Warn(title, content, dur) return Fluxo:Notify({Title = title or "Warning", Content = content or "", Type = "Warning", Duration = dur or 3}) end
+function Fluxo:Info(title, content, dur) return Fluxo:Notify({Title = title or "Info", Content = content or "", Type = "Info", Duration = dur or 3}) end
 
-return Wolf
+return Fluxo
