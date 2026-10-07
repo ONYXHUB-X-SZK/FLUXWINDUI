@@ -445,7 +445,8 @@ function Wolf:CreateWindow(config)
 	local bgTransparency = math.clamp(config.BackgroundImageTransparency or config.BackgroundTransparency or 0, 0, 1)
 	local panelTransparency = math.clamp(config.Transparency or 0.08, 0.02, 0.6)
 	local openButtonIcon = config.OpenButtonIcon or "https://cdn.discordapp.com/attachments/1521705447781044287/1550262143704760473/1789680518902-removebg-preview_1.png?ex=6aadb1a1&is=6aac6021&hm=3c16d7c7d6bb64238c13cc5ff71324c7142f68e224447cf4b2173be6d8caee69&"
-	local openButtonText = config.OpenButtonText or "Open Window"
+	local openButtonText = config.OpenButtonText or ""
+	local openButtonSize = tonumber(config.OpenButtonSize) or 54
 
 	local Theme = Wolf.Themes[themeName] or Wolf.Themes["67"]
 	Wolf.CurrentTheme = Theme
@@ -817,136 +818,149 @@ function Wolf:CreateWindow(config)
 	PageHost.Parent = MainFrame
 
 	-- ============================================================
-	-- FLOATING OPEN BUTTON (redesigned)
+	-- FLOATING OPEN BUTTON (small circular icon, redesigned)
 	-- ============================================================
 	local resolvedOpenIcon, resolvedOpenIconIsCustom = ResolveIcon(openButtonIcon)
 	local hasOpenIcon = resolvedOpenIcon ~= ""
 
-	local FLOAT_W, FLOAT_H = 250, 62
-	local FLOAT_X, FLOAT_Y = 24, -31
+	local FLOAT_SIZE = openButtonSize
+	local FLOAT_MARGIN = 22
+	local FLOAT_X = FLOAT_MARGIN
+	local FLOAT_Y = -math.floor(FLOAT_SIZE / 2)
+	local FLOAT_OFFSCREEN_X = -FLOAT_SIZE - 40
 
 	local FloatBtn = Instance.new("TextButton")
-	FloatBtn.Size = UDim2.fromOffset(FLOAT_W, FLOAT_H)
+	FloatBtn.Name = "WolfFloatBtn"
+	FloatBtn.Size = UDim2.fromOffset(FLOAT_SIZE, FLOAT_SIZE)
 	FloatBtn.Position = UDim2.new(0, FLOAT_X, 0.5, FLOAT_Y)
-	FloatBtn.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
-	FloatBtn.BackgroundTransparency = 0.05
+	FloatBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
+	FloatBtn.BackgroundTransparency = 0.08
 	FloatBtn.Text = ""
 	FloatBtn.Visible = false
 	FloatBtn.ClipsDescendants = false
 	FloatBtn.AutoButtonColor = false
 	FloatBtn.ZIndex = 10
 	FloatBtn.Parent = WindowGui
-	Round(31, FloatBtn)
+	Round(math.floor(FLOAT_SIZE / 2), FloatBtn)
 
 	local FloatScale = Instance.new("UIScale")
 	FloatScale.Scale = 1
 	FloatScale.Parent = FloatBtn
 
-	local FloatStroke = Outline(FloatBtn, Theme.Accent, 1.4, 0.15)
-
 	local FloatGlow = Instance.new("UIStroke")
 	FloatGlow.Color = Theme.Accent
-	FloatGlow.Thickness = 5
-	FloatGlow.Transparency = 0.85
+	FloatGlow.Thickness = 8
+	FloatGlow.Transparency = 0.92
 	FloatGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	FloatGlow.Parent = FloatBtn
 
-	local FloatShine = Instance.new("Frame")
-	FloatShine.Size = UDim2.new(1, -24, 0, 1)
-	FloatShine.Position = UDim2.new(0, 12, 0, 6)
-	FloatShine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	FloatShine.BackgroundTransparency = 0.85
-	FloatShine.BorderSizePixel = 0
-	FloatShine.ZIndex = 11
-	FloatShine.Parent = FloatBtn
+	local FloatStroke = Instance.new("UIStroke")
+	FloatStroke.Color = Theme.Accent
+	FloatStroke.Thickness = 1.4
+	FloatStroke.Transparency = 0.15
+	FloatStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	FloatStroke.Parent = FloatBtn
 
-	local FloatIconBadge = Instance.new("Frame")
-	FloatIconBadge.Size = UDim2.fromOffset(42, 42)
-	FloatIconBadge.Position = UDim2.new(0, 10, 0.5, -21)
-	FloatIconBadge.BackgroundColor3 = Theme.Accent
-	FloatIconBadge.BackgroundTransparency = 0.82
-	FloatIconBadge.ZIndex = 11
-	FloatIconBadge.Parent = FloatBtn
-	Round(12, FloatIconBadge)
-	Outline(FloatIconBadge, Theme.Accent, 1.2, 0.45)
+	local FloatPulse = Instance.new("Frame")
+	FloatPulse.Name = "WolfFloatPulse"
+	FloatPulse.AnchorPoint = Vector2.new(0.5, 0.5)
+	FloatPulse.Position = UDim2.fromScale(0.5, 0.5)
+	FloatPulse.Size = UDim2.fromScale(1, 1)
+	FloatPulse.BackgroundTransparency = 1
+	FloatPulse.BorderSizePixel = 0
+	FloatPulse.ZIndex = 9
+	FloatPulse.Parent = FloatBtn
+	local FloatPulseCorner = Instance.new("UICorner")
+	FloatPulseCorner.CornerRadius = UDim.new(1, 0)
+	FloatPulseCorner.Parent = FloatPulse
+	local FloatPulseStroke = Instance.new("UIStroke")
+	FloatPulseStroke.Color = Theme.Accent
+	FloatPulseStroke.Thickness = 1.5
+	FloatPulseStroke.Transparency = 0.35
+	FloatPulseStroke.Parent = FloatPulse
 
 	if hasOpenIcon then
 		local iconImg = Instance.new("ImageLabel")
-		iconImg.Size = UDim2.fromOffset(22, 22)
+		iconImg.Name = "WolfFloatIcon"
 		iconImg.AnchorPoint = Vector2.new(0.5, 0.5)
 		iconImg.Position = UDim2.fromScale(0.5, 0.5)
+		iconImg.Size = UDim2.fromOffset(FLOAT_SIZE - 12, FLOAT_SIZE - 12)
 		iconImg.BackgroundTransparency = 1
 		iconImg.Image = resolvedOpenIcon
 		iconImg.ScaleType = Enum.ScaleType.Fit
 		iconImg.ZIndex = 12
-		iconImg.Parent = FloatIconBadge
+		iconImg.Parent = FloatBtn
 		if not resolvedOpenIconIsCustom then
 			iconImg.ImageColor3 = Theme.Accent
 		end
 	else
 		local symbol = Instance.new("TextLabel")
+		symbol.Name = "WolfFloatIcon"
 		symbol.Size = UDim2.fromScale(1, 1)
 		symbol.BackgroundTransparency = 1
 		symbol.Text = "W"
 		symbol.Font = Enum.Font.GothamBlack
-		symbol.TextSize = 22
+		symbol.TextSize = math.floor(FLOAT_SIZE * 0.5)
 		symbol.TextColor3 = Theme.Accent
 		symbol.ZIndex = 12
-		symbol.Parent = FloatIconBadge
+		symbol.Parent = FloatBtn
 	end
 
-	local FloatTitle = Instance.new("TextLabel")
-	FloatTitle.Size = UDim2.new(1, -96, 0, 18)
-	FloatTitle.Position = UDim2.new(0, 64, 0, 12)
-	FloatTitle.BackgroundTransparency = 1
-	FloatTitle.Text = openButtonText
-	FloatTitle.Font = Enum.Font.GothamBold
-	FloatTitle.TextSize = 14
-	FloatTitle.TextColor3 = Theme.Text
-	FloatTitle.TextXAlignment = Enum.TextXAlignment.Left
-	FloatTitle.TextTruncate = Enum.TextTruncate.AtEnd
-	FloatTitle.ZIndex = 11
-	FloatTitle.Parent = FloatBtn
+	local FloatDot = Instance.new("Frame")
+	FloatDot.Name = "WolfFloatDot"
+	FloatDot.AnchorPoint = Vector2.new(1, 0)
+	FloatDot.Position = UDim2.new(1, 2, 0, 2)
+	FloatDot.Size = UDim2.fromOffset(9, 9)
+	FloatDot.BackgroundColor3 = Theme.Accent
+	FloatDot.BorderSizePixel = 0
+	FloatDot.ZIndex = 13
+	FloatDot.Parent = FloatBtn
+	Round(5, FloatDot)
+	local FloatDotStroke = Instance.new("UIStroke")
+	FloatDotStroke.Color = Color3.fromRGB(8, 8, 12)
+	FloatDotStroke.Thickness = 2
+	FloatDotStroke.Parent = FloatDot
 
-	local FloatSub = Instance.new("TextLabel")
-	FloatSub.Size = UDim2.new(1, -96, 0, 14)
-	FloatSub.Position = UDim2.new(0, 64, 0, 32)
-	FloatSub.BackgroundTransparency = 1
-	FloatSub.Text = "Press " .. (toggleKey and toggleKey.Name or "RightShift") .. " to toggle"
-	FloatSub.Font = Enum.Font.Gotham
-	FloatSub.TextSize = 10
-	FloatSub.TextColor3 = Theme.Placeholder
-	FloatSub.TextXAlignment = Enum.TextXAlignment.Left
-	FloatSub.TextTruncate = Enum.TextTruncate.AtEnd
-	FloatSub.ZIndex = 11
-	FloatSub.Parent = FloatBtn
-
-	local FloatChevron = Instance.new("TextLabel")
-	FloatChevron.Size = UDim2.fromOffset(20, 20)
-	FloatChevron.Position = UDim2.new(1, -30, 0.5, -10)
-	FloatChevron.BackgroundTransparency = 1
-	FloatChevron.Text = "›"
-	FloatChevron.Font = Enum.Font.GothamBold
-	FloatChevron.TextSize = 22
-	FloatChevron.TextColor3 = Theme.Accent
-	FloatChevron.ZIndex = 11
-	FloatChevron.Parent = FloatBtn
+	local FloatTip = Instance.new("TextLabel")
+	FloatTip.Name = "WolfFloatTip"
+	FloatTip.AnchorPoint = Vector2.new(0, 0.5)
+	FloatTip.Position = UDim2.new(0, FLOAT_MARGIN + FLOAT_SIZE + 12, 0.5, FLOAT_Y + FLOAT_SIZE / 2)
+	FloatTip.Size = UDim2.fromOffset(0, 26)
+	FloatTip.AutomaticSize = Enum.AutomaticSize.X
+	FloatTip.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
+	FloatTip.BackgroundTransparency = 0.05
+	FloatTip.Text = "  " .. openButtonText .. "  "
+	FloatTip.Font = Enum.Font.GothamBold
+	FloatTip.TextSize = 12
+	FloatTip.TextColor3 = Theme.Text
+	FloatTip.Visible = false
+	FloatTip.ZIndex = 15
+	FloatTip.Parent = WindowGui
+	Round(6, FloatTip)
+	local FloatTipStroke = Outline(FloatTip, Theme.Accent, 1, 0.35)
+	local FloatTipScale = Instance.new("UIScale")
+	FloatTipScale.Scale = 0.6
+	FloatTipScale.Parent = FloatTip
 
 	local FloatHit = Instance.new("TextButton")
 	FloatHit.Size = UDim2.fromScale(1, 1)
 	FloatHit.BackgroundTransparency = 1
 	FloatHit.AutoButtonColor = false
 	FloatHit.Text = ""
-	FloatHit.ZIndex = 13
+	FloatHit.ZIndex = 20
 	FloatHit.Parent = FloatBtn
 
+	-- Pulse animation
 	task.spawn(function()
-		while FloatGlow and FloatGlow.Parent do
-			local t1 = TweenService:Create(FloatGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Transparency = 0.65 })
-			t1:Play(); t1.Completed:Wait()
-			if not FloatGlow or not FloatGlow.Parent then break end
-			local t2 = TweenService:Create(FloatGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Transparency = 0.9 })
-			t2:Play(); t2.Completed:Wait()
+		while FloatPulse and FloatPulse.Parent do
+			FloatPulse.Size = UDim2.fromScale(1, 1)
+			FloatPulseStroke.Transparency = 0.35
+			local t1 = TweenService:Create(FloatPulse, TweenInfo.new(1.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromScale(1.9, 1.9) })
+			local t2 = TweenService:Create(FloatPulseStroke, TweenInfo.new(1.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Transparency = 1 })
+			t1:Play()
+			t2:Play()
+			t1.Completed:Wait()
+			task.wait(0.35)
 		end
 	end)
 
@@ -954,29 +968,35 @@ function Wolf:CreateWindow(config)
 
 	FloatHit.MouseEnter:Connect(function()
 		floatHovering = true
-		Tween(FloatScale, 0.22, { Scale = 1.04 })
-		Tween(FloatStroke, 0.22, { Transparency = 0 })
-		Tween(FloatGlow, 0.25, { Transparency = 0.35, Thickness = 7 })
-		Tween(FloatIconBadge, 0.2, { BackgroundTransparency = 0.65 })
-		Tween(FloatChevron, 0.22, { Position = UDim2.new(1, -24, 0.5, -10) })
-		Tween(FloatShine, 0.2, { BackgroundTransparency = 0.6 })
+		Tween(FloatScale, 0.22, { Scale = 1.14 })
+		Tween(FloatStroke, 0.22, { Transparency = 0, Thickness = 2 })
+		Tween(FloatGlow, 0.25, { Transparency = 0.4, Thickness = 11 })
+		Tween(FloatDot, 0.2, { Size = UDim2.fromOffset(12, 12) })
+		if openButtonText and openButtonText ~= "" then
+			FloatTip.Position = UDim2.new(0, FloatBtn.AbsolutePosition.X + FloatBtn.AbsoluteSize.X + 12, 0, FloatBtn.AbsolutePosition.Y + FloatBtn.AbsoluteSize.Y / 2 - 13)
+			FloatTip.Visible = true
+			FloatTipScale.Scale = 0.6
+			Tween(FloatTipScale, 0.28, { Scale = 1 })
+		end
 	end)
 
 	FloatHit.MouseLeave:Connect(function()
 		floatHovering = false
 		Tween(FloatScale, 0.25, { Scale = 1 })
-		Tween(FloatStroke, 0.25, { Transparency = 0.15 })
-		Tween(FloatGlow, 0.3, { Transparency = 0.85, Thickness = 5 })
-		Tween(FloatIconBadge, 0.2, { BackgroundTransparency = 0.82 })
-		Tween(FloatChevron, 0.22, { Position = UDim2.new(1, -30, 0.5, -10) })
-		Tween(FloatShine, 0.2, { BackgroundTransparency = 0.85 })
+		Tween(FloatStroke, 0.25, { Transparency = 0.15, Thickness = 1.4 })
+		Tween(FloatGlow, 0.3, { Transparency = 0.92, Thickness = 8 })
+		Tween(FloatDot, 0.2, { Size = UDim2.fromOffset(9, 9) })
+		local t = Tween(FloatTipScale, 0.18, { Scale = 0.6 })
+		t.Completed:Connect(function()
+			if not floatHovering then FloatTip.Visible = false end
+		end)
 	end)
 
 	FloatHit.MouseButton1Down:Connect(function()
-		Tween(FloatScale, 0.08, { Scale = 0.97 })
+		Tween(FloatScale, 0.08, { Scale = 0.92 })
 	end)
 	FloatHit.MouseButton1Up:Connect(function()
-		Tween(FloatScale, 0.15, { Scale = floatHovering and 1.04 or 1 })
+		Tween(FloatScale, 0.18, { Scale = floatHovering and 1.14 or 1 })
 	end)
 	-- ============================================================
 
@@ -987,12 +1007,11 @@ function Wolf:CreateWindow(config)
 		if isAnimating then return end
 		isAnimating = true
 		if FloatBtn.Visible then
-			Tween(FloatBtn, 0.2, { Position = UDim2.new(0, -300, 0.5, FLOAT_Y) })
-			Tween(FloatScale, 0.2, { Scale = 0.7 })
-			task.delay(0.2, function()
+			FloatTip.Visible = false
+			Tween(FloatBtn, 0.22, { Position = UDim2.new(0, FLOAT_OFFSCREEN_X, 0.5, FLOAT_Y) })
+			Tween(FloatScale, 0.22, { Scale = 0.6 })
+			task.delay(0.22, function()
 				FloatBtn.Visible = false
-				FloatBtn.Position = UDim2.new(0, FLOAT_X, 0.5, FLOAT_Y)
-				FloatScale.Scale = 1
 			end)
 		end
 		MainFrame.Visible = true
@@ -1011,10 +1030,11 @@ function Wolf:CreateWindow(config)
 		t.Completed:Connect(function()
 			MainFrame.Visible = false
 			FloatBtn.Visible = true
-			FloatBtn.Position = UDim2.new(0, -300, 0.5, FLOAT_Y)
-			FloatScale.Scale = 0.7
-			Tween(FloatBtn, 0.35, { Position = UDim2.new(0, FLOAT_X, 0.5, FLOAT_Y) })
-			Tween(FloatScale, 0.35, { Scale = 1 })
+			FloatBtn.Position = UDim2.new(0, FLOAT_OFFSCREEN_X, 0.5, FLOAT_Y)
+			FloatScale.Scale = 0.6
+			local ti = TweenInfo.new(0.55, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+			TweenService:Create(FloatBtn, ti, { Position = UDim2.new(0, FLOAT_X, 0.5, FLOAT_Y) }):Play()
+			Tween(FloatScale, 0.55, { Scale = 1 })
 			isAnimating = false
 		end)
 		winOpen = false
@@ -1157,28 +1177,28 @@ function Wolf:CreateWindow(config)
 			ThemeBtn.BackgroundColor3 = Shade(T.ElementBackground)
 		end
 		if WindowStroke then WindowStroke.Color = T.Accent end
-		if FloatStroke then FloatStroke.Color = T.Accent end
-		if FloatGlow then FloatGlow.Color = T.Accent end
 
 		if HeaderScan then HeaderScan.BackgroundColor3 = T.Accent end
 		if SideScan then SideScan.BackgroundColor3 = T.Accent end
 
 		-- FloatBtn theme refresh
-		FloatBtn.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
-		if FloatIconBadge then
-			FloatIconBadge.BackgroundColor3 = T.Accent
-			local badgeStroke = FloatIconBadge:FindFirstChildOfClass("UIStroke")
-			if badgeStroke then badgeStroke.Color = T.Accent end
-			local badgeImg = FloatIconBadge:FindFirstChildOfClass("ImageLabel")
-			if badgeImg and not badgeImg:GetAttribute("WolfCustomIcon") then
-				badgeImg.ImageColor3 = T.Accent
+		FloatBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
+		if FloatGlow then FloatGlow.Color = T.Accent end
+		if FloatStroke then FloatStroke.Color = T.Accent end
+		if FloatPulseStroke then FloatPulseStroke.Color = T.Accent end
+		if FloatDot then FloatDot.BackgroundColor3 = T.Accent end
+		if FloatTip then FloatTip.TextColor3 = T.Text end
+		if FloatTipStroke then FloatTipStroke.Color = T.Accent end
+		local floatIcon = FloatBtn:FindFirstChild("WolfFloatIcon")
+		if floatIcon then
+			if floatIcon:IsA("ImageLabel") then
+				if not floatIcon:GetAttribute("WolfCustomIcon") then
+					floatIcon.ImageColor3 = T.Accent
+				end
+			elseif floatIcon:IsA("TextLabel") then
+				floatIcon.TextColor3 = T.Accent
 			end
-			local badgeSymbol = FloatIconBadge:FindFirstChildOfClass("TextLabel")
-			if badgeSymbol then badgeSymbol.TextColor3 = T.Accent end
 		end
-		if FloatTitle then FloatTitle.TextColor3 = T.Text end
-		if FloatSub then FloatSub.TextColor3 = T.Placeholder end
-		if FloatChevron then FloatChevron.TextColor3 = T.Accent end
 
 		for _, item in ipairs(Registered) do
 			if item.Type == "TabBtn" then
