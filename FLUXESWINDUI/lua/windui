@@ -9,10 +9,10 @@ local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer and LocalPlayer:GetMouse()
 
 Fluxo.IconSources = {
-	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons1",
-	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons2",
-	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons3",
-	"https://raw.githubusercontent.com/danhub-67/Wolf/refs/heads/main/Icons4",
+	"https://raw.githubusercontent.com/ONYXHUB-X-SZK/SZKICONS/refs/heads/main/WINDUI/ICON1",
+	"https://raw.githubusercontent.com/ONYXHUB-X-SZK/SZKICONS1/refs/heads/main/ICONS/WINDUI2",
+	-- "https://raw.githubusercontent.com/ONYXHUB-X-SZK/ICONS2/refs/heads/main/SZK/WINDUI/ICONS3", -- URL rota (404)
+	"https://raw.githubusercontent.com/ONYXHUB-X-SZK/SZKICONS3/refs/heads/main/SZK/ICONS4",
 }
 
 function Fluxo:LoadIcons()
@@ -202,10 +202,9 @@ local function BuildTheme(name, accent, outline, toggle, slider, text, placehold
 	}
 end
 
-Fluxo.Themes["67"] = BuildTheme("67", "#FF1A1A", "#FF2A2A", "#FF1A1A", "#FF1A1A", "#F0F0F0", "#9A9A9A", "#000000", "#0A0A0A", "#FF1A1A")
 Fluxo.Themes.Sovereign = BuildTheme("Sovereign", "#D4AF37", "#F0D580", "#D4AF37", "#F0D580", "#FFF8E7", "#C9B98A", "#0A0805", "#15110A", "#F0D580")
 
-Fluxo.ThemeOrder = {"67", "Sovereign"}
+Fluxo.ThemeOrder = {"Sovereign"}
 
 local MainGui = Instance.new("ScreenGui")
 MainGui.Name = "FluxoWindUI"
@@ -310,7 +309,7 @@ function Fluxo:Notify(config)
 		Info = Color3.fromRGB(80, 140, 255),
 	}
 	local accent = colors[ntype] or colors.Info
-	local T = Fluxo.CurrentTheme or Fluxo.Themes["67"]
+	local T = Fluxo.CurrentTheme or Fluxo.Themes.Sovereign
 
 	local slot = Instance.new("Frame")
 	slot.Size = UDim2.new(1, 0, 0, 0)
@@ -433,7 +432,7 @@ end
 
 function Fluxo:CreateWindow(config)
 	config = config or {}
-	local themeName = config.Theme or "67"
+	local themeName = config.Theme or "Sovereign"
 	local title = config.Title or "Fluxo Wind UI"
 	local description = config.Description or "Made by Flux"
 	local iconKey = config.Logo or config.Icon
@@ -449,7 +448,7 @@ function Fluxo:CreateWindow(config)
 	local openButtonSize = tonumber(config.OpenButtonSize) or 48
 	local openButtonRadius = tonumber(config.OpenButtonRadius) or 12
 
-	local Theme = Fluxo.Themes[themeName] or Fluxo.Themes["67"]
+	local Theme = Fluxo.Themes[themeName] or Fluxo.Themes.Sovereign
 	Fluxo.CurrentTheme = Theme
 	local Registered = {}
 	local DependentRows = {}
@@ -569,7 +568,7 @@ function Fluxo:CreateWindow(config)
 	BgTint.BackgroundTransparency = 0.55
 	BgTint.BorderSizePixel = 0
 	BgTint.ZIndex = 0
-	BgTint.Visible = hasBackground and themeName ~= "67"
+	BgTint.Visible = hasBackground
 	BgTint.Parent = MainFrame
 
 	local Overlay = Instance.new("Frame")
@@ -819,7 +818,7 @@ function Fluxo:CreateWindow(config)
 	PageHost.Parent = MainFrame
 
 	-- ============================================================
-	-- FLOATING OPEN BUTTON (square rounded, no pulse, position persistent)
+	-- FLOATING OPEN BUTTON
 	-- ============================================================
 	local resolvedOpenIcon, resolvedOpenIconIsCustom = ResolveIcon(openButtonIcon)
 	local hasOpenIcon = resolvedOpenIcon ~= ""
@@ -1097,7 +1096,7 @@ function Fluxo:CreateWindow(config)
 	EnableResize(ResizeGrip)
 
 	local function UpdateTheme(name, animate)
-		local T = Fluxo.Themes[name] or Fluxo.Themes["67"]
+		local T = Fluxo.Themes[name] or Fluxo.Themes.Sovereign
 		Fluxo.CurrentTheme = T
 		Theme = T
 
@@ -1105,7 +1104,7 @@ function Fluxo:CreateWindow(config)
 		MainFrame.BackgroundTransparency = mainBgTrans
 		CornerFlag.BackgroundColor3 = T.Accent
 		BgTint.BackgroundColor3 = T.Accent
-		BgTint.Visible = hasBackground and T.Name ~= "67"
+		BgTint.Visible = hasBackground
 		TabStripGlow.Color = T.Accent
 		Sidebar.ScrollBarImageColor3 = T.Accent
 		ThemePopup.BackgroundColor3 = T.ElementBackground
@@ -1122,7 +1121,6 @@ function Fluxo:CreateWindow(config)
 		if HeaderScan then HeaderScan.BackgroundColor3 = T.Accent end
 		if SideScan then SideScan.BackgroundColor3 = T.Accent end
 
-		-- FloatBtn theme refresh
 		FloatBtn.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
 		if FloatGlow then FloatGlow.Color = T.Accent end
 		if FloatStroke then FloatStroke.Color = T.Accent end
@@ -1266,7 +1264,7 @@ function Fluxo:CreateWindow(config)
 		BgImageLabel.Visible = resolved ~= ""
 		if transparency then BgImageLabel.ImageTransparency = transparency end
 		hasBackground = resolved ~= ""
-		BgTint.Visible = hasBackground and Theme.Name ~= "67"
+		BgTint.Visible = hasBackground
 		mainBgTrans = hasBackground and 0.92 or panelTransparency
 		elementTrans = hasBackground and 0.82 or 0.22
 		elevatedTrans = hasBackground and 0.7 or 0.16
